@@ -49,6 +49,41 @@ class SearchViewController: UIViewController {
         }
     }
     
+    func parseJson(jsonString: String) -> [String: AnyObject]? {
+        guard let data = jsonString.dataUsingEncoding(NSUTF8StringEncoding)
+            else { return nil }
+        do {
+            return try NSJSONSerialization.JSONObjectWithData(data, options: []) as? [String: AnyObject]
+        } catch {
+            print("JSON Error: \(error)")
+            return nil
+        }
+    }
+    
+    func showNetWorkError() {
+        let alert = UIAlertController(title: "Whoops...",
+                                      message: "There was an error reading from the Itunes store Please try again",
+                                      preferredStyle: .Alert)
+        let action = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+        alert.addAction(action)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func parseDictionary(diactionary: [String: AnyObject]) {
+        guard let array = diactionary["results"] as? [AnyObject] else {
+            print("Expected result array")
+            return
+        }
+        
+        for result in array {
+            if let result = result as? [String: AnyObject] {
+                if let wrapperType = result["wrapperType"] as? String, let kind = result["kind"] as? String {
+                    print("wrapper type: \(wrapperType), kind \(kind)")
+                }
+            }
+        }
+    }
+    
     // MARK - Custom Struct
     struct TabbleViewIdentifiers {
         static let searchResultCell = "SearchResultCell"
@@ -85,9 +120,14 @@ extension SearchViewController: UISearchBarDelegate {
             let url = urlWithSearchText(searchBar.text!)
             print("URL: '\(url)'")
             if let jsonResult = performStoreRequestWithUrl(url){
-                print("Received JSON Responses: \(jsonResult)")
+                if let dictionary = parseJson(jsonResult) {
+                    parseDictionary(dictionary)
+                    
+                    tableview.reloadData()
+                    return
+                }
             }
-            tableview.reloadData()
+            showNetWorkError()
         }
     }
     
