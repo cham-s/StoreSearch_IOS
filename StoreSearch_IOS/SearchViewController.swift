@@ -16,6 +16,7 @@ class SearchViewController: UIViewController {
     var searchResults = [SearchResult]()
     override func viewDidLoad() {
         super.viewDidLoad()
+        searchBar.becomeFirstResponder()
         let cellNib = UINib(nibName: TabbleViewIdentifiers.searchResultCell, bundle: nil)
         let cellNotNib = UINib(nibName: TabbleViewIdentifiers.nothingFoundCell, bundle: nil)
         tableview.registerNib(cellNib, forCellReuseIdentifier: TabbleViewIdentifiers.searchResultCell)
@@ -47,7 +48,6 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         
         searchResults = [SearchResult]()
-        
         if searchBar.text! != "Justin" {
             for i in 0...2 {
                 let searchResult = SearchResult()
