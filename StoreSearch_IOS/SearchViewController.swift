@@ -33,32 +33,62 @@ class SearchViewController: UIViewController {
 
     // MARK - Custom Methods
     
+    func urlWithSearchText(searchText: String) -> NSURL {
+        let escapedSearchText = searchText.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+        let urlString = String(format: "https://itunes.apple.com/search?term=%@", escapedSearchText)
+        let url = NSURL(string: urlString)
+        return url!
+    }
+    
+    func performStoreRequestWithUrl(url: NSURL) -> String? {
+        do {
+            return try String(contentsOfURL: url, encoding: NSUTF8StringEncoding)
+        } catch {
+            print("Download Error: \(error)")
+            return nil
+        }
+    }
+    
     // MARK - Custom Struct
     struct TabbleViewIdentifiers {
         static let searchResultCell = "SearchResultCell"
         static let nothingFoundCell = "NothingFoundCell"
     }
-    
-    
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// MARK - Extensions
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-        
-        searchResults = [SearchResult]()
-        if searchBar.text! != "Justin" {
-            for i in 0...2 {
-                let searchResult = SearchResult()
-                searchResult.name = String(format: "Fake Result %d for", i)
-                searchResult.artistName = searchBar.text!
-                searchResults.append(searchResult)
+        if !searchBar.text!.isEmpty {
+            searchBar.resignFirstResponder()
+                
+            hasSearch = true
+            searchResults = [SearchResult]()
+            let url = urlWithSearchText(searchBar.text!)
+            print("URL: '\(url)'")
+            if let jsonResult = performStoreRequestWithUrl(url){
+                print("Received JSON Responses: \(jsonResult)")
             }
-            
+            tableview.reloadData()
         }
-        hasSearch = true
-        tableview.reloadData()
     }
     
     func positionForBar(bar: UIBarPositioning) -> UIBarPosition {
@@ -97,4 +127,3 @@ extension SearchViewController: UITableViewDataSource {
         }
     }
 }
-
