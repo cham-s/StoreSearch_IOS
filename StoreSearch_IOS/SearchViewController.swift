@@ -69,39 +69,56 @@ class SearchViewController: UIViewController {
         presentViewController(alert, animated: true, completion: nil)
     }
     
-    func parseDictionary(diactionary: [String: AnyObject]) {
+    func parseDictionary(diactionary: [String: AnyObject]) -> [SearchResult] {
         guard let array = diactionary["results"] as? [AnyObject] else {
             print("Expected result array")
-            return
+            return []
         }
-        
+        var searchResults = [SearchResult]()
         for result in array {
             if let result = result as? [String: AnyObject] {
-                if let wrapperType = result["wrapperType"] as? String, let kind = result["kind"] as? String {
-                    print("wrapper type: \(wrapperType), kind \(kind)")
+                var searchResult: SearchResult?
+                if let wrapperType = result["wrapperType"] as? String {
+                    switch wrapperType {
+                    case "track":
+                        searchResult = parseTrack(result)
+                    default:
+                        break
+                    }
+                }
+                if let res = searchResult {
+                    searchResults.append(res)
                 }
             }
         }
+        return searchResults
     }
     
+    func parseTrack(dictionary: [String: AnyObject]) -> SearchResult {
+        let searchResult =  SearchResult()
+        
+        searchResult.name = dictionary["trackName"] as! String
+        searchResult.artistName = dictionary["artistName"] as! String
+        searchResult.artworkURL60 = dictionary["artworkUrl60"] as! String
+        searchResult.artworkURL100 = dictionary["artworkUrl100"] as! String
+        searchResult.storeURL = dictionary["trackViewUrl"] as! String
+        searchResult.kind = dictionary["kind"] as! String
+        searchResult.currency = dictionary["currency"] as! String
+        
+        if let price = dictionary["trackPrice"] as? Double {
+            searchResult.price = price
+        }
+        if let genre = dictionary["primaryGenreName"] as? String {
+            searchResult.genre = genre
+        }
+        return searchResult
+    }
     // MARK - Custom Struct
     struct TabbleViewIdentifiers {
         static let searchResultCell = "SearchResultCell"
         static let nothingFoundCell = "NothingFoundCell"
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -121,8 +138,7 @@ extension SearchViewController: UISearchBarDelegate {
             print("URL: '\(url)'")
             if let jsonResult = performStoreRequestWithUrl(url){
                 if let dictionary = parseJson(jsonResult) {
-                    parseDictionary(dictionary)
-                    
+                    searchResults = parseDictionary(dictionary)
                     tableview.reloadData()
                     return
                 }
