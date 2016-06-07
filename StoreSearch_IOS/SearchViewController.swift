@@ -221,6 +221,7 @@ extension SearchViewController: UISearchBarDelegate {
             if let jsonResult = performStoreRequestWithUrl(url){
                 if let dictionary = parseJson(jsonResult) {
                     searchResults = parseDictionary(dictionary)
+                    searchResults.sortInPlace(<)
                     tableview.reloadData()
                     return
                 }
