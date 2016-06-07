@@ -234,10 +234,15 @@ extension SearchViewController: UISearchBarDelegate {
                     
                     self.searchResults = self.parseDictionary(dictionary)
                     self.searchResults.sortInPlace(<)
-                    print("Done!")
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.isLoading = false
+                        self.tableview.reloadData()
+                    }
                     return
                 }
-                print("Error!")
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.showNetWorkError()
+                }
             }
         }
     }
