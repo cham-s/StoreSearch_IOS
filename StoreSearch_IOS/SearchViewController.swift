@@ -82,9 +82,15 @@ class SearchViewController: UIViewController {
                     switch wrapperType {
                     case "track":
                         searchResult = parseTrack(result)
+                    case "audiobook":
+                        searchResult = parseAudioBook(result)
+                    case "software":
+                        searchResult = parseSoftware(result)
                     default:
                         break
                     }
+                } else if let kind = result["kind"] as? String where kind == "ebook"{
+                    searchResult = parseEBook(result)
                 }
                 if let res = searchResult {
                     searchResults.append(res)
@@ -112,6 +118,82 @@ class SearchViewController: UIViewController {
             searchResult.genre = genre
         }
         return searchResult
+    }
+    
+    func parseAudioBook(dictionary: [String: AnyObject]) -> SearchResult {
+        let searchResult =  SearchResult()
+        
+        searchResult.name = dictionary["collectionName"] as! String
+        searchResult.artistName = dictionary["artistName"] as! String
+        searchResult.artworkURL60 = dictionary["artworkUrl60"] as! String
+        searchResult.artworkURL100 = dictionary["artworkUrl100"] as! String
+        searchResult.storeURL = dictionary["collectionViewUrl"] as! String
+        searchResult.kind = "audiobook"
+        searchResult.currency = dictionary["currency"] as! String
+        
+        if let price = dictionary["collectionPrice"] as? Double {
+            searchResult.price = price
+        }
+        if let genre = dictionary["primaryGenreName"] as? String {
+            searchResult.genre = genre
+        }
+        return searchResult
+    }
+    
+    func parseSoftware(dictionary: [String: AnyObject]) -> SearchResult {
+        let searchResult =  SearchResult()
+        
+        searchResult.name = dictionary["trackName"] as! String
+        searchResult.artistName = dictionary["artistName"] as! String
+        searchResult.artworkURL60 = dictionary["artworkUrl60"] as! String
+        searchResult.artworkURL100 = dictionary["artworkUrl100"] as! String
+        searchResult.storeURL = dictionary["trackViewUrl"] as! String
+        searchResult.kind = dictionary["kind"] as! String
+        searchResult.currency = dictionary["currency"] as! String
+        
+        if let price = dictionary["price"] as? Double {
+            searchResult.price = price
+        }
+        if let genre = dictionary["primaryGenreName"] as? String {
+            searchResult.genre = genre
+        }
+        return searchResult
+    }
+    
+    func parseEBook(dictionary: [String: AnyObject]) -> SearchResult {
+        let searchResult =  SearchResult()
+        
+        searchResult.name = dictionary["trackName"] as! String
+        searchResult.artistName = dictionary["artistName"] as! String
+        searchResult.artworkURL60 = dictionary["artworkUrl60"] as! String
+        searchResult.artworkURL100 = dictionary["artworkUrl100"] as! String
+        searchResult.storeURL = dictionary["trackViewUrl"] as! String
+        searchResult.kind = dictionary["kind"] as! String
+        searchResult.currency = dictionary["currency"] as! String
+        
+        if let price = dictionary["trackPrice"] as? Double {
+            searchResult.price = price
+        }
+        if let genres: AnyObject = dictionary["genres"] {
+            searchResult.genre = (genres as! [String]).joinWithSeparator(", ")
+        }
+        return searchResult
+    }
+    
+    func kindOfDisplay(kind: String) -> String {
+        switch kind {
+        case "album": return "Album"
+        case "audiobook": return "Audio Book"
+        case "book": return "Book"
+        case "feature-movie": return "Movie"
+        case "music-video": return "Music Video"
+        case "podcast": return "Podcast"
+        case "sofware": return "App"
+        case "song": return "Song"
+        case "tv-episode": return "TV Episode"
+        default:
+            return kind
+        }
     }
     // MARK - Custom Struct
     struct TabbleViewIdentifiers {
@@ -178,7 +260,11 @@ extension SearchViewController: UITableViewDataSource {
             let cell = tableView.dequeueReusableCellWithIdentifier( TabbleViewIdentifiers.searchResultCell, forIndexPath: indexPath) as! SearchResultCell
             let searchResult = searchResults[indexPath.row]
             cell.nameLabel!.text = searchResult.name
-            cell.artistNameLabel!.text = searchResult.artistName
+            if searchResult.artistName.isEmpty {
+                cell.artistNameLabel!.text = "Unkown"
+            } else {
+                cell.artistNameLabel!.text = String(format: "%@ (%@)", searchResult.artistName, kindOfDisplay(searchResult.kind))
+            }
             return cell
         }
     }
