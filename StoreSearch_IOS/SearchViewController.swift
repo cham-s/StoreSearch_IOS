@@ -10,6 +10,8 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
+    
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableview: UITableView!
     var hasSearch = false
@@ -29,7 +31,7 @@ class SearchViewController: UIViewController {
         tableview.registerNib(cellNotNib, forCellReuseIdentifier: TabbleViewIdentifiers.nothingFoundCell)
         tableview.registerNib(cellLoadNib, forCellReuseIdentifier: TabbleViewIdentifiers.loadingCell)
         tableview.rowHeight = 80
-        tableview.contentInset = UIEdgeInsets(top: 64, left: 0, bottom: 0, right: 0)
+        tableview.contentInset = UIEdgeInsets(top: 108, left: 0, bottom: 0, right: 0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -200,6 +202,12 @@ class SearchViewController: UIViewController {
             return kind
         }
     }
+    
+    // MARK - Actions
+    @IBAction func segmentChanged(sender: UISegmentedControl) {
+        performsSearch()
+    }
+    
     // MARK - Custom Struct
     struct TabbleViewIdentifiers {
         static let searchResultCell = "SearchResultCell"
@@ -217,6 +225,9 @@ class SearchViewController: UIViewController {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        performsSearch()
+    }
+    func performsSearch() {
         if !searchBar.text!.isEmpty {
             searchBar.resignFirstResponder()
             
