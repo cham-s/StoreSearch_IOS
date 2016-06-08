@@ -15,6 +15,7 @@ class SearchViewController: UIViewController {
     var hasSearch = false
     var searchResults = [SearchResult]()
     var isLoading = false
+    var dataTask: NSURLSessionDataTask?
     
     // MARK - Override Method
     override func viewDidLoad() {
@@ -55,9 +56,7 @@ class SearchViewController: UIViewController {
         }
     }
     
-    func parseJson(jsonString: String) -> [String: AnyObject]? {
-        guard let data = jsonString.dataUsingEncoding(NSUTF8StringEncoding)
-            else { return nil }
+    func parseJson(data: NSData) -> [String: AnyObject]? {
         do {
             return try NSJSONSerialization.JSONObjectWithData(data, options: []) as? [String: AnyObject]
         } catch {
@@ -221,29 +220,43 @@ extension SearchViewController: UISearchBarDelegate {
         if !searchBar.text!.isEmpty {
             searchBar.resignFirstResponder()
             
+            dataTask?.cancel()
             isLoading = true
             tableview.reloadData()
+            
             hasSearch = true
             searchResults = [SearchResult]()
-            let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
             
-            dispatch_async(queue) {
-                let url = self.urlWithSearchText(searchBar.text!)
-                if let jsonString = self.performStoreRequestWithUrl(url),
-                    let dictionary = self.parseJson(jsonString) {
-                    
-                    self.searchResults = self.parseDictionary(dictionary)
-                    self.searchResults.sortInPlace(<)
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.isLoading = false
-                        self.tableview.reloadData()
-                    }
+            let url = urlWithSearchText(searchBar.text!)
+            let session = NSURLSession.sharedSession()
+            dataTask = session.dataTaskWithURL(url, completionHandler: {
+                data, response, error in
+                if let error = error where error.code == -999 {
                     return
+                } else if let httpResponse = response as? NSHTTPURLResponse
+                    where httpResponse.statusCode == 200 {
+                    if let data = data, dictionary = self.parseJson(data) {
+                        self.searchResults = self.parseDictionary(dictionary)
+                        self.searchResults.sortInPlace(<)
+                        
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.isLoading = false
+                            self.tableview.reloadData()
+                        }
+                        return
+                    }
+                }
+                else {
+                    print("Failure! \(response!)")
                 }
                 dispatch_async(dispatch_get_main_queue()) {
+                    self.hasSearch = false
+                    self.isLoading = false
+                    self.tableview.reloadData()
                     self.showNetWorkError()
                 }
-            }
+            })
+            dataTask?.resume()
         }
     }
     
