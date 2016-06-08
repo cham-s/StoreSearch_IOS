@@ -27,5 +27,34 @@ class SearchResultCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    // MARK - Custom Method
+    func configureForSearchResult(searchResult: SearchResult) {
+        nameLabel.text = searchResult.name
+        
+        if searchResult.artistName.isEmpty {
+            nameLabel.text = "Unkown"
+        } else {
+            artistNameLabel.text = String(format: "%@ (%@)",
+                                            searchResult.artistName,
+                                            kindOfDisplay(searchResult.kind))
+        }
+    }
+    
+    func kindOfDisplay(kind: String) -> String {
+        switch kind {
+        case "album": return "Album"
+        case "audiobook": return "Audio Book"
+        case "book": return "Book"
+        case "feature-movie": return "Movie"
+        case "music-video": return "Music Video"
+        case "podcast": return "Podcast"
+        case "sofware": return "App"
+        case "song": return "Song"
+        case "tv-episode": return "TV Episode"
+        default:
+            return kind
+        }
+    }
 
 }

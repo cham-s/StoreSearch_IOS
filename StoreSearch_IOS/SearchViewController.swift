@@ -42,9 +42,21 @@ class SearchViewController: UIViewController {
 
     // MARK - Custom Methods
     
-    func urlWithSearchText(searchText: String) -> NSURL {
-        let escapedSearchText = searchText.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
-        let urlString = String(format: "https://itunes.apple.com/search?term=%@&limit=200", escapedSearchText)
+    func urlWithSearchText(searchText: String, category: Int) -> NSURL {
+        let entityName: String
+        switch category {
+        case 1: entityName = "musicTrack"
+        case 2: entityName = "musicTrack"
+        case 3: entityName = "musicTrack"
+        default:
+            entityName = ""
+        }
+        
+        let escapedSearchText =
+            searchText.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+        let urlString = String(format: "https://itunes.apple.com/search?term=%@&limit=200&entity=%@",
+                               escapedSearchText,
+                               entityName)
         let url = NSURL(string: urlString)
         return url!
     }
@@ -78,7 +90,6 @@ class SearchViewController: UIViewController {
     
     func parseDictionary(diactionary: [String: AnyObject]) -> [SearchResult] {
         guard let array = diactionary["results"] as? [AnyObject] else {
-            print("Expected result array")
             return []
         }
         var searchResults = [SearchResult]()
@@ -86,6 +97,7 @@ class SearchViewController: UIViewController {
             if let result = result as? [String: AnyObject] {
                 var searchResult: SearchResult?
                 if let wrapperType = result["wrapperType"] as? String {
+                    // TODO : check why parsing is wrong
                     switch wrapperType {
                     case "track":
                         searchResult = parseTrack(result)
@@ -187,21 +199,7 @@ class SearchViewController: UIViewController {
         return searchResult
     }
     
-    func kindOfDisplay(kind: String) -> String {
-        switch kind {
-        case "album": return "Album"
-        case "audiobook": return "Audio Book"
-        case "book": return "Book"
-        case "feature-movie": return "Movie"
-        case "music-video": return "Music Video"
-        case "podcast": return "Podcast"
-        case "sofware": return "App"
-        case "song": return "Song"
-        case "tv-episode": return "TV Episode"
-        default:
-            return kind
-        }
-    }
+    
     
     // MARK - Actions
     @IBAction func segmentChanged(sender: UISegmentedControl) {
@@ -215,11 +213,6 @@ class SearchViewController: UIViewController {
         static let loadingCell = "LoadingCell"
     }
 }
-
-
-
-
-
 
 // MARK - Extensions
 
@@ -238,7 +231,8 @@ extension SearchViewController: UISearchBarDelegate {
             hasSearch = true
             searchResults = [SearchResult]()
             
-            let url = urlWithSearchText(searchBar.text!)
+            let url = urlWithSearchText(searchBar.text!,
+                                        category: segmentedControl.selectedSegmentIndex)
             let session = NSURLSession.sharedSession()
             dataTask = session.dataTaskWithURL(url, completionHandler: {
                 data, response, error in
@@ -311,12 +305,7 @@ extension SearchViewController: UITableViewDataSource {
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier( TabbleViewIdentifiers.searchResultCell, forIndexPath: indexPath) as! SearchResultCell
             let searchResult = searchResults[indexPath.row]
-            cell.nameLabel!.text = searchResult.name
-            if searchResult.artistName.isEmpty {
-                cell.artistNameLabel!.text = "Unkown"
-            } else {
-                cell.artistNameLabel!.text = String(format: "%@ (%@)", searchResult.artistName, kindOfDisplay(searchResult.kind))
-            }
+            cell.configureForSearchResult(searchResult)
             return cell
         }
     }
