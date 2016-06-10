@@ -9,11 +9,20 @@
 import UIKit
 
 class DetailViewController: UIViewController {
+    
+    // MARK: - Outlets
+    
+    @IBOutlet weak var popupView: UIView!
+    @IBOutlet weak var artworkImageView: UIImageView!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var artistNameLabel: UILabel!
+    @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var genreLabel: UILabel!
+    @IBOutlet weak var priceButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        popupView.layer.cornerRadius = 10
     }
 
     override func didReceiveMemoryWarning() {
