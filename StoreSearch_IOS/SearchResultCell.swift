@@ -49,7 +49,7 @@ class SearchResultCell: UITableViewCell {
         } else {
             artistNameLabel.text = String(format: "%@ (%@)",
                                             searchResult.artistName,
-                                            kindOfDisplay(searchResult.kind))
+                                            searchResult.kindOfDisplay())
         }
         artWork.image = UIImage(named: "Placeholder")
         if let url = NSURL(string: searchResult.artworkURL60) {
@@ -57,20 +57,6 @@ class SearchResultCell: UITableViewCell {
         }
     }
     
-    func kindOfDisplay(kind: String) -> String {
-        switch kind {
-        case "album": return "Album"
-        case "audiobook": return "Audio Book"
-        case "book": return "Book"
-        case "feature-movie": return "Movie"
-        case "music-video": return "Music Video"
-        case "podcast": return "Podcast"
-        case "sofware": return "App"
-        case "song": return "Song"
-        case "tv-episode": return "TV Episode"
-        default:
-            return kind
-        }
-    }
+    
 
 }

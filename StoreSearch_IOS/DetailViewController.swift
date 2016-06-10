@@ -19,10 +19,18 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var typeLabel: UILabel!
     @IBOutlet weak var genreLabel: UILabel!
     @IBOutlet weak var priceButton: UIButton!
+    
+    // MARK: - Properties
+    
+    var searResult: SearchResult!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         popupView.layer.cornerRadius = 10
+        addGestureRecognizer()
+        if searResult != nil {
+            updateUI()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -51,6 +59,40 @@ class DetailViewController: UIViewController {
     @IBAction func close() {
         dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    func updateUI() {
+        nameLabel.text = searResult.name
+        if searResult.artistName.isEmpty {
+            artistNameLabel.text = "Unkown"
+        } else {
+            artistNameLabel.text = searResult.artistName
+        }
+        
+        typeLabel.text = searResult.kindOfDisplay()
+        genreLabel.text = searResult.genre
+        
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .CurrencyStyle
+        formatter.currencyCode = searResult.currency
+        
+        let priceText: String
+        if searResult.price == 0 {
+            priceText = "Free"
+        } else if let text = formatter.stringFromNumber(searResult.price) {
+            priceText = text
+        } else {
+            priceText = ""
+        }
+        
+        priceButton.setTitle(priceText, forState: .Normal)
+    }
+    
+    func addGestureRecognizer() {
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(DetailViewController.close))
+        gestureRecognizer.cancelsTouchesInView = false
+        gestureRecognizer.delegate = self
+        view.addGestureRecognizer(gestureRecognizer)
+    }
 
 }
 
@@ -61,5 +103,11 @@ extension DetailViewController: UIViewControllerTransitioningDelegate {
         return DimmingPresentationController(
             presentedViewController: presented,
             presentingViewController: presenting)
+    }
+}
+
+extension DetailViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+        return (touch.view === self.view)
     }
 }
