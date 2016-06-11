@@ -27,6 +27,7 @@ class DetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor.clearColor()
         popupView.layer.cornerRadius = 10
         addGestureRecognizer()
         if searResult != nil {
@@ -121,6 +122,12 @@ extension DetailViewController: UIViewControllerTransitioningDelegate {
         return DimmingPresentationController(
             presentedViewController: presented,
             presentingViewController: presenting)
+    }
+    func animationControllerForPresentedController(presented: UIViewController,
+                                                   presentingController presenting: UIViewController,
+                                                sourceController source: UIViewController)
+        -> UIViewControllerAnimatedTransitioning? {
+        return BounceAnimationController()
     }
 }
 
