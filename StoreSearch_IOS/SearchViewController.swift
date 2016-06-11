@@ -232,19 +232,32 @@ class SearchViewController: UIViewController {
         
         if let controller = landscapeViewController {
             controller.view.bounds = view.bounds
+            controller.view.alpha = 0
             
             view.addSubview(controller.view)
             addChildViewController(controller)
-            controller.didMoveToParentViewController(self)
+            
+            coordinator.animateAlongsideTransition({ _ in
+                controller.view.alpha = 1
+                self.searchBar.resignFirstResponder()
+            }, completion: { _ in
+                controller.didMoveToParentViewController(self)
+            })
         }
     }
     
     func hideLandscapeViewWithCoordinator (coordinator: UIViewControllerTransitionCoordinator) {
         if let controller = landscapeViewController {
             controller.willMoveToParentViewController(nil)
-            controller.view.removeFromSuperview()
-            controller.removeFromParentViewController()
-            landscapeViewController = nil
+            
+            coordinator.animateAlongsideTransition({ _ in
+                controller.view.alpha = 0
+            }, completion: {_ in
+                controller.view.removeFromSuperview()
+                controller.removeFromParentViewController()
+                self.landscapeViewController = nil
+            })
+            
         }
     }
     
