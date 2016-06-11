@@ -23,6 +23,7 @@ class DetailViewController: UIViewController {
     // MARK: - Properties
     
     var searResult: SearchResult!
+    var downloadTask: NSURLSessionDownloadTask?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +54,11 @@ class DetailViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    deinit {
+        print("deinit \(self)")
+        downloadTask?.cancel()
+    }
 
     // MARK: - Custom Methods
 
@@ -85,6 +91,10 @@ class DetailViewController: UIViewController {
         }
         
         priceButton.setTitle(priceText, forState: .Normal)
+        
+        if let url = NSURL(string: searResult.artworkURL100) {
+            downloadTask = artworkImageView.loadingImageWithURL(url)
+        }
     }
     
     func addGestureRecognizer() {
@@ -92,6 +102,14 @@ class DetailViewController: UIViewController {
         gestureRecognizer.cancelsTouchesInView = false
         gestureRecognizer.delegate = self
         view.addGestureRecognizer(gestureRecognizer)
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func openInStore() {
+        if let url = NSURL(string: searResult.storeURL) {
+            UIApplication.sharedApplication().openURL(url)
+        }
     }
 
 }
