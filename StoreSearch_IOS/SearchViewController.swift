@@ -231,6 +231,7 @@ class SearchViewController: UIViewController {
         LandscapeViewController
         
         if let controller = landscapeViewController {
+            controller.searchResults = searchResults
             controller.view.bounds = view.bounds
             controller.view.alpha = 0
             
