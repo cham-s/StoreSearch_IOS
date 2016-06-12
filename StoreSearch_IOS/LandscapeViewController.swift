@@ -16,8 +16,9 @@ class LandscapeViewController: UIViewController {
     
     // MARK: - Instance variables
     
-    var searchResults = [SearchResult]()
+    var search = Search()
     private var firsTime = true
+    private var downloadTasks = [NSURLSessionDownloadTask]()
     
     
     // MARK: - Overrides
@@ -44,7 +45,7 @@ class LandscapeViewController: UIViewController {
         
         if firsTime {
             firsTime = false
-            tileButtons(searchResults)
+            tileButtons(search.searchResults)
         }
         scrollView.frame = view.bounds
         
@@ -56,6 +57,9 @@ class LandscapeViewController: UIViewController {
     
     deinit {
         print("deinit \(self)")
+        for task in downloadTasks {
+            task.cancel()
+        }
     }
     
     // MARK: - Custom Methods
@@ -158,6 +162,7 @@ class LandscapeViewController: UIViewController {
                 }
             })
             downloadTask.resume()
+            downloadTasks.append(downloadTask)
         }
     }
 }
