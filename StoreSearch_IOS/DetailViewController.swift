@@ -24,6 +24,7 @@ class DetailViewController: UIViewController {
     
     var searResult: SearchResult!
     var downloadTask: NSURLSessionDownloadTask?
+    var dismissAnimationStyle = AnimationStyle.Fade
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +65,7 @@ class DetailViewController: UIViewController {
     // MARK: - Custom Methods
 
     @IBAction func close() {
+        dismissAnimationStyle = .Slide
         dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -112,6 +114,13 @@ class DetailViewController: UIViewController {
             UIApplication.sharedApplication().openURL(url)
         }
     }
+    
+    // MARK: - Enum
+    
+    enum AnimationStyle {
+        case Slide
+        case Fade
+    }
 
 }
 
@@ -132,7 +141,12 @@ extension DetailViewController: UIViewControllerTransitioningDelegate {
     }
     
     func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return SlideOutAnimationController()
+        switch dismissAnimationStyle {
+        case .Slide:
+            return SlideOutAnimationController()
+        case .Fade:
+            return FadeOutAnimationController()
+        }
     }
 }
 
