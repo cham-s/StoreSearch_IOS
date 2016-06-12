@@ -78,11 +78,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="334" y="571"/>
+            <point key="canvasLocation" x="320" y="367"/>
         </scene>
         <!--Landscape View Controller-->
         <scene sceneID="Rc3-q3-xQv">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5DY-W2-fQz" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="LandscapeViewController" id="t78-a7-QtE" customClass="LandscapeViewController" customModule="StoreSearch_IOS" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7F0-jm-k6M"/>
@@ -92,23 +93,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ebs-98-Rde">
-                                <rect key="frame" x="279" y="289" width="42" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="88S-Q8-KKs">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </scrollView>
+                            <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="sLj-ke-FhI">
+                                <rect key="frame" x="280" y="282" width="39" height="37"/>
+                            </pageControl>
                         </subviews>
                         <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstItem="Ebs-98-Rde" firstAttribute="centerX" secondItem="23a-Vu-4mm" secondAttribute="centerX" id="0rN-Xh-41u"/>
-                            <constraint firstItem="Ebs-98-Rde" firstAttribute="centerY" secondItem="23a-Vu-4mm" secondAttribute="centerY" id="yXf-V0-fWO"/>
-                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="pageControl" destination="sLj-ke-FhI" id="R6b-tk-5bv"/>
+                        <outlet property="scrollView" destination="88S-Q8-KKs" id="W9L-ex-0X6"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5DY-W2-fQz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="334" y="1251"/>
+            <point key="canvasLocation" x="320" y="1047"/>
         </scene>
         <!--Detail View Controller-->
         <scene sceneID="jPm-UM-meV">
@@ -236,7 +236,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="leJ-dU-rA7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1005" y="571"/>
+            <point key="canvasLocation" x="991" y="367"/>
         </scene>
     </scenes>
     <resources>
