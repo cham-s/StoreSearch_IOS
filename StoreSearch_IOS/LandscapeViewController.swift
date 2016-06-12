@@ -35,6 +35,8 @@ class LandscapeViewController: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = true
         
         scrollView.backgroundColor = UIColor(patternImage: UIImage(named: "LandscapeBackground")!)
+        
+        pageControl.numberOfPages = 0
     }
     
     override func viewWillLayoutSubviews() {
@@ -54,6 +56,16 @@ class LandscapeViewController: UIViewController {
     
     deinit {
         print("deinit \(self)")
+    }
+    
+    // MARK: - Custom Methods
+    
+    @IBAction func pageChanged(sender: UIPageControl) {
+        
+         UIView.animateWithDuration(0.3, delay: 0, options: .CurveEaseInOut, animations: {
+            self.scrollView.contentOffset = CGPoint(x: self.scrollView.bounds.size.width *  CGFloat(sender.currentPage),
+                                           y: 0)
+        }, completion: nil)
     }
     
     // MARK: - Custom Methods
@@ -98,16 +110,14 @@ class LandscapeViewController: UIViewController {
         var row = 0
         var column = 0
         var x = marginX
-        var index = 0
         for searchResult in searchResults {
-            index += 1
-            let button = UIButton(type: .System)
-            button.backgroundColor = UIColor.whiteColor()
-            button.setTitle("\(index)", forState: .Normal)
+            let button = UIButton(type: .Custom)
+            button.setBackgroundImage(UIImage(named: "LandscapeButton"), forState: .Normal)
             button.frame = CGRect(x: x + paddingHorz,
                                   y: marginY + CGFloat(row) * itemHeight + paddingVert,
                                   width: buttonWidth,
                                   height: buttonHeight)
+            downloadImageForSearchResult(searchResult, andPlaceOnButton: button)
             
             scrollView.addSubview(button)
             row += 1
@@ -127,6 +137,35 @@ class LandscapeViewController: UIViewController {
         
         scrollView.contentSize = CGSize(width: CGFloat(numPages) * scrollViewWidth,
                                         height: scrollView.bounds.size.height)
-        print("Number of pages: \(numPages)")
+        pageControl.numberOfPages = numPages
+        pageControl.currentPage = 0
+    }
+    
+    private func downloadImageForSearchResult(searchResult: SearchResult,
+                                              andPlaceOnButton button: UIButton) {
+        if let url = NSURL(string: searchResult.artworkURL60) {
+            let session = NSURLSession.sharedSession()
+            let downloadTask = session.downloadTaskWithURL(url, completionHandler: {
+                [weak button] url, response, error in
+                
+                if error == nil, let url = url, data = NSData(contentsOfURL: url),
+                    image = UIImage(data: data) {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        if let button = button {
+                            button.setImage(image, forState: .Normal)
+                        }
+                    }
+                }
+            })
+            downloadTask.resume()
+        }
+    }
+}
+
+extension LandscapeViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let width = scrollView.bounds.size.width
+        let currentPage = Int((scrollView.contentOffset.x + width / 2) / width)
+        pageControl.currentPage = currentPage
     }
 }
