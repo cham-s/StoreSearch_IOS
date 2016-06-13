@@ -11,11 +11,26 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    // MARK: - Instance Variables
+    
     var window: UIWindow?
+    var splitViewController: UISplitViewController {
+        return window?.rootViewController as! UISplitViewController
+    }
+    var searchViewController: SearchViewController {
+        return splitViewController.viewControllers.first as! SearchViewController
+    }
+    var detailNavigationController: UINavigationController {
+        return splitViewController.viewControllers.last as! UINavigationController
+    }
+    var detailViewController: DetailViewController {
+        return detailNavigationController.topViewController as! DetailViewController
+    }
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         customizeAppearance()
+        splitViewController.displayModeButtonItem()
         return true
     }
 
@@ -42,6 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // MARK - Custom Methods
+    
     func customizeAppearance() {
         let barTintColor = UIColor(red: 20/255, green: 160/255, blue: 160/255, alpha: 1)
         UISearchBar.appearance().tintColor = barTintColor

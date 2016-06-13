@@ -33,6 +33,8 @@ class SearchViewController: UIViewController {
         tableview.registerNib(cellLoadNib, forCellReuseIdentifier: TabbleViewIdentifiers.loadingCell)
         tableview.rowHeight = 80
         tableview.contentInset = UIEdgeInsets(top: 108, left: 0, bottom: 0, right: 0)
+        
+        title = NSLocalizedString("Search", comment: "Split View Master View")
     }
 
     override func didReceiveMemoryWarning() {
@@ -124,7 +126,6 @@ class SearchViewController: UIViewController {
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
             })
-            
         }
     }
     
