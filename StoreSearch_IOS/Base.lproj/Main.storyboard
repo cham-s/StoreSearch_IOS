@@ -83,7 +83,6 @@
         <!--Landscape View Controller-->
         <scene sceneID="Rc3-q3-xQv">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5DY-W2-fQz" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="LandscapeViewController" id="t78-a7-QtE" customClass="LandscapeViewController" customModule="StoreSearch_IOS" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7F0-jm-k6M"/>
@@ -111,8 +110,10 @@
                     <connections>
                         <outlet property="pageControl" destination="sLj-ke-FhI" id="R6b-tk-5bv"/>
                         <outlet property="scrollView" destination="88S-Q8-KKs" id="W9L-ex-0X6"/>
+                        <segue destination="6RC-gP-Grt" kind="presentation" identifier="ShowDetail" id="vET-ok-cgc"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5DY-W2-fQz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="320" y="1047"/>
         </scene>
@@ -249,4 +250,7 @@
         <image name="CloseButton" width="15" height="15"/>
         <image name="PriceButton" width="11" height="24"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="vET-ok-cgc"/>
+    </inferredMetricsTieBreakers>
 </document>

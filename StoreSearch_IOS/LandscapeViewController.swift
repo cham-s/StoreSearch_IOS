@@ -64,6 +64,16 @@ class LandscapeViewController: UIViewController {
                                    height: pageControl.frame.size.height)
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowDetail" {
+            if case .Results(let list) = search.state {
+                let detailViewController = segue.destinationViewController as! DetailViewController
+                let searchResult = list[sender!.tag - 2000]
+                detailViewController.searResult = searchResult
+            }
+        }
+    }
+    
     deinit {
         print("deinit \(self)")
         for task in downloadTasks {
@@ -166,7 +176,7 @@ class LandscapeViewController: UIViewController {
         var row = 0
         var column = 0
         var x = marginX
-        for searchResult in searchResults {
+        for (index, searchResult) in searchResults.enumerate() {
             let button = UIButton(type: .Custom)
             button.setBackgroundImage(UIImage(named: "LandscapeButton"), forState: .Normal)
             button.frame = CGRect(x: x + paddingHorz,
@@ -187,6 +197,8 @@ class LandscapeViewController: UIViewController {
                     x += marginX * 2
                 }
             }
+            button.tag = 2000 + index
+            button.addTarget(self, action: #selector(LandscapeViewController.buttonPressed(_:)), forControlEvents: .TouchUpInside)
         }
         let buttonsPerPage = columnsPerPage * rowsPerPage
         let numPages = 1 + (searchResults.count - 1) / buttonsPerPage
@@ -195,6 +207,10 @@ class LandscapeViewController: UIViewController {
                                         height: scrollView.bounds.size.height)
         pageControl.numberOfPages = numPages
         pageControl.currentPage = 0
+    }
+    
+    func buttonPressed(sender: UIButton) {
+        performSegueWithIdentifier("ShowDetail", sender: sender)
     }
     
     private func downloadImageForSearchResult(searchResult: SearchResult,
