@@ -46,8 +46,12 @@ class LandscapeViewController: UIViewController {
         if firsTime {
             firsTime = false
             switch search.state {
-            case .NoResults, .NotSearchedYet, .Loading:
+            case .NoResults:
+                showNothingFoundLabel()
+             case .NotSearchedYet:
                 break
+            case .Loading:
+                showSpinner()
             case .Results(let list):
                 tileButtons(list)
             }
@@ -67,7 +71,7 @@ class LandscapeViewController: UIViewController {
         }
     }
     
-    // MARK: - Custom Methods
+    // MARK: - Actions
     
     @IBAction func pageChanged(sender: UIPageControl) {
         
@@ -78,6 +82,49 @@ class LandscapeViewController: UIViewController {
     }
     
     // MARK: - Custom Methods
+    
+    private func showNothingFoundLabel() {
+        let label = UILabel(frame: CGRect.zero)
+        label.text = "Nothing Found"
+        label.textColor = UIColor.whiteColor()
+        label.backgroundColor = UIColor.clearColor()
+        
+        label.sizeToFit()
+        
+        var rect = label.frame
+        rect.size.width = ceil(rect.size.width / 2) * 2
+        rect.size.height = ceil(rect.size.height / 2) * 2
+        label.frame = rect
+        label.center = CGPoint(x: CGRectGetMidX(scrollView.bounds),
+                                 y: CGRectGetMidY(scrollView.bounds))
+        view.addSubview(label)
+    }
+    
+    func searchResultReceived() {
+        hideSpinner()
+        
+        switch search.state {
+        case .NotSearchedYet, .Loading:
+            showNothingFoundLabel()
+        case .NoResults:
+            break
+        case .Results(let list):
+            tileButtons(list)
+        }
+    }
+    
+    private func hideSpinner() {
+        view.viewWithTag(1000)?.removeFromSuperview()
+    }
+    
+    private func showSpinner() {
+        let spinner = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        spinner.center = CGPoint(x: CGRectGetMidX(scrollView.bounds) + 0.5,
+                                 y: CGRectGetMidY(scrollView.bounds) + 0.5)
+        spinner.tag = 1000
+        view.addSubview(spinner)
+        spinner.startAnimating()
+    }
     
     private func tileButtons(searchResults: [SearchResult]) {
         

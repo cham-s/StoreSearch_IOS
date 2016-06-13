@@ -64,7 +64,6 @@ class SearchViewController: UIViewController {
         }
     }
 
-
     // MARK - Custom Methods
     
     func performStoreRequestWithUrl(url: NSURL) -> String? {
@@ -76,8 +75,6 @@ class SearchViewController: UIViewController {
         }
     }
     
-    
-    
     func showNetWorkError() {
         let alert = UIAlertController(title: "Whoops...",
                                       message: "There was an error reading from the Itunes store Please try again",
@@ -86,7 +83,6 @@ class SearchViewController: UIViewController {
         alert.addAction(action)
         presentViewController(alert, animated: true, completion: nil)
     }
-    
     
     func showLandscapeViewWithCoordinator(coordinator: UIViewControllerTransitionCoordinator) {
         precondition(landscapeViewController == nil)
@@ -153,6 +149,7 @@ extension SearchViewController: UISearchBarDelegate {
             search.performSearchForText(searchBar.text!,
                                         category: category, completion: {
                                             sucess in
+                                            self.landscapeViewController?.searchResultReceived()
                                             if !sucess {
                                                 self.showNetWorkError()
                                             }
