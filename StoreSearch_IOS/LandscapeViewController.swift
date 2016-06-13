@@ -45,7 +45,12 @@ class LandscapeViewController: UIViewController {
         
         if firsTime {
             firsTime = false
-            tileButtons(search.searchResults)
+            switch search.state {
+            case .NoResults, .NotSearchedYet, .Loading:
+                break
+            case .Results(let list):
+                tileButtons(list)
+            }
         }
         scrollView.frame = view.bounds
         
